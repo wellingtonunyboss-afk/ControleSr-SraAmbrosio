@@ -1,0 +1,1003 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#050505">
+  <title>Controle Financeiro Sr. & Sra. Ambrosio</title>
+  <style>
+    :root {
+      --bg: #050505;
+      --panel: #0c0c0c;
+      --panel-2: #14110b;
+      --ink: #f7f1e3;
+      --muted: #b8ad98;
+      --line: #9d7a2e;
+      --line-soft: rgba(197, 157, 76, 0.35);
+      --gold: #c59d4c;
+      --gold-2: #f0cb74;
+      --good: #43b66f;
+      --warn: #f0b74a;
+      --bad: #df5a5a;
+      --blue: #79a7ff;
+      --shadow: 0 18px 44px rgba(0, 0, 0, 0.38);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: radial-gradient(circle at top left, rgba(197, 157, 76, 0.16), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(197, 157, 76, 0.08), transparent 30%), var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+    button, input, select, textarea { font: inherit; }
+    button { border: 0; cursor: pointer; }
+    .hidden { display: none !important; }
+
+    .login-screen {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(360px, 0.95fr);
+      background: #050505;
+    }
+    .login-photo {
+      position: relative;
+      min-height: 100vh;
+      overflow: hidden;
+      border-right: 1px solid var(--line);
+    }
+    .login-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: saturate(0.92) contrast(1.05);
+    }
+    .login-photo::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, rgba(5, 5, 5, 0.16), rgba(5, 5, 5, 0.62));
+    }
+    .login-panel {
+      display: grid;
+      place-items: center;
+      padding: 34px;
+    }
+    .login-card {
+      width: min(440px, 100%);
+      background: linear-gradient(180deg, rgba(20, 17, 11, 0.98), rgba(10, 10, 10, 0.98));
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+    .login-card h1 {
+      font-size: 28px;
+      margin: 14px 0 8px;
+      letter-spacing: 0;
+    }
+    .login-card p {
+      color: var(--muted);
+      margin: 0 0 20px;
+      line-height: 1.45;
+    }
+    .setup-box {
+      margin-top: 16px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      padding: 12px;
+      background: rgba(197, 157, 76, 0.07);
+    }
+    .setup-box summary {
+      cursor: pointer;
+      color: #f5df9c;
+      font-weight: 800;
+    }
+    .setup-box .field {
+      margin-top: 12px;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: #080808;
+      color: var(--ink);
+      padding: 22px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+      border-right: 1px solid var(--line);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 6px 22px;
+      border-bottom: 1px solid var(--line-soft);
+      margin-bottom: 18px;
+    }
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--gold-2), var(--gold));
+      display: grid;
+      place-items: center;
+      color: #111;
+      font-weight: 900;
+      letter-spacing: 0;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.3);
+    }
+    .brand strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+    .brand span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 2px;
+    }
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+    .nav button {
+      min-height: 42px;
+      border-radius: 8px;
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+    }
+    .nav button.active, .nav button:hover {
+      background: rgba(197, 157, 76, 0.12);
+      border-color: var(--line-soft);
+      color: #fff7df;
+    }
+    .sidebar-note {
+      margin-top: 22px;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(197, 157, 76, 0.08);
+      border: 1px solid var(--line-soft);
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    main { padding: 26px; min-width: 0; }
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+    h1 {
+      font-size: clamp(24px, 3vw, 34px);
+      margin: 0 0 6px;
+      letter-spacing: 0;
+    }
+    .subtitle { margin: 0; color: var(--muted); line-height: 1.45; }
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+    .btn {
+      min-height: 40px;
+      border-radius: 8px;
+      padding: 9px 13px;
+      background: #1d211f;
+      color: var(--ink);
+      border: 1px solid var(--line-soft);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--gold-2), var(--gold));
+      color: #111;
+      border-color: var(--gold);
+    }
+    .btn.danger {
+      background: rgba(223, 90, 90, 0.12);
+      color: #ffb3b3;
+      border-color: rgba(223, 90, 90, 0.38);
+    }
+    .btn:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible {
+      outline: 3px solid rgba(240, 203, 116, 0.3);
+      outline-offset: 2px;
+    }
+
+    .grid { display: grid; gap: 14px; }
+    .kpis { grid-template-columns: repeat(4, minmax(0, 1fr)); margin-bottom: 18px; }
+    .kpi, section {
+      background: linear-gradient(180deg, rgba(20, 17, 11, 0.98), rgba(10, 10, 10, 0.98));
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+    .kpi { padding: 16px; min-height: 118px; }
+    .kpi .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 800;
+      text-transform: uppercase;
+    }
+    .kpi .value {
+      margin-top: 12px;
+      font-size: clamp(21px, 2.3vw, 30px);
+      font-weight: 900;
+      word-break: break-word;
+    }
+    .kpi .hint { color: var(--muted); font-size: 13px; margin-top: 7px; }
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+    section { padding: 18px; }
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+    h2 { font-size: 18px; margin: 0; letter-spacing: 0; }
+    .filters {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, minmax(140px, 0.5fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .field { display: grid; gap: 6px; }
+    label { font-size: 13px; font-weight: 800; color: #e5d2a0; }
+    input, select, textarea {
+      width: 100%;
+      min-height: 42px;
+      border-radius: 8px;
+      border: 1px solid var(--line-soft);
+      background: #050505;
+      color: var(--ink);
+      padding: 9px 11px;
+    }
+    input[type="checkbox"] {
+      width: 22px;
+      height: 22px;
+      min-height: 0;
+      accent-color: var(--gold);
+    }
+    textarea { min-height: 82px; resize: vertical; }
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .full { grid-column: 1 / -1; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+    }
+    table { width: 100%; border-collapse: collapse; min-width: 680px; background: #080808; }
+    th, td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line-soft);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+    th {
+      color: #e5d2a0;
+      background: #0d0d0d;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+    tr:last-child td { border-bottom: 0; }
+    .status-select, .purchase-value { min-width: 128px; min-height: 36px; padding: 7px 9px; }
+    .purchase-value { max-width: 140px; }
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      background: rgba(197, 157, 76, 0.14);
+      color: #f5df9c;
+      border: 1px solid var(--line-soft);
+      white-space: nowrap;
+    }
+    .tag.good { background: rgba(67, 182, 111, 0.14); color: #91e8ad; border-color: rgba(67, 182, 111, 0.35); }
+    .tag.warn { background: rgba(240, 183, 74, 0.13); color: #f5d185; border-color: rgba(240, 183, 74, 0.36); }
+    .tag.bad { background: rgba(223, 90, 90, 0.13); color: #ffb3b3; border-color: rgba(223, 90, 90, 0.36); }
+    .tag.blue { background: rgba(121, 167, 255, 0.13); color: #b7ceff; border-color: rgba(121, 167, 255, 0.36); }
+    .money.income { color: #91e8ad; font-weight: 900; }
+    .money.expense { color: #ffb3b3; font-weight: 900; }
+    .empty {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed var(--line-soft);
+      border-radius: 8px;
+      background: rgba(197, 157, 76, 0.06);
+    }
+    .chart { display: grid; gap: 11px; margin-top: 8px; }
+    .bar-row {
+      display: grid;
+      grid-template-columns: 120px minmax(0, 1fr) 92px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+    .bar-track {
+      height: 12px;
+      background: #242018;
+      border-radius: 999px;
+      overflow: hidden;
+      border: 1px solid rgba(197, 157, 76, 0.18);
+    }
+    .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--gold), var(--gold-2)); }
+    .split { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .mini {
+      padding: 14px;
+      border: 1px solid var(--line-soft);
+      border-radius: 8px;
+      background: rgba(197, 157, 76, 0.06);
+    }
+    .mini strong { display: block; margin-bottom: 6px; }
+    .mini span { color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #080808;
+      color: var(--ink);
+      border: 1px solid var(--line);
+      padding: 12px 14px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      max-width: min(360px, calc(100vw - 36px));
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: 160ms ease;
+      z-index: 20;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 1040px) {
+      .login-screen { grid-template-columns: 1fr; }
+      .login-photo {
+        min-height: 300px;
+        height: 38vh;
+        border-right: 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .app { grid-template-columns: 1fr; }
+      .sidebar { position: static; height: auto; }
+      .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+      .layout, .kpis { grid-template-columns: 1fr 1fr; }
+      .filters { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 760px) {
+      main { padding: 18px 12px 90px; }
+      .login-panel { padding: 18px; }
+      .login-card { padding: 20px; }
+      .login-photo { min-height: 240px; height: 32vh; }
+      .topbar, .section-head { display: grid; }
+      .toolbar { justify-content: stretch; }
+      .toolbar .btn, .actions .btn { width: 100%; }
+      .nav, .layout, .kpis, .filters, .form-grid, .split { grid-template-columns: 1fr; }
+      .sidebar { padding: 16px 12px; }
+      .brand { padding-bottom: 14px; margin-bottom: 12px; }
+      .sidebar-note { display: none; }
+      table, thead, tbody, tr, th, td { display: block; }
+      table { min-width: 0; background: transparent; }
+      thead { display: none; }
+      .table-wrap { border: 0; overflow: visible; }
+      tr {
+        border: 1px solid var(--line-soft);
+        border-radius: 8px;
+        margin-bottom: 12px;
+        padding: 10px;
+        background: #080808;
+      }
+      td {
+        border: 0;
+        padding: 8px 0;
+        display: grid;
+        grid-template-columns: 108px minmax(0, 1fr);
+        gap: 10px;
+        align-items: center;
+      }
+      td::before {
+        content: attr(data-label);
+        color: #e5d2a0;
+        font-size: 12px;
+        font-weight: 900;
+        text-transform: uppercase;
+      }
+      td.row-actions { grid-template-columns: 1fr; }
+      td.row-actions::before { display: none; }
+      td.row-actions .btn { width: 100%; }
+      .purchase-value, .status-select { width: 100%; max-width: none; }
+      .bar-row { grid-template-columns: 94px minmax(0, 1fr); }
+      .bar-row .amount { grid-column: 2; }
+    }
+  </style>
+</head>
+<body>
+  <div class="login-screen" id="loginScreen">
+    <div class="login-photo"><img src="./login-ambrosio.jpg" alt="Sr. e Sra. Ambrosio"></div>
+    <div class="login-panel">
+      <form class="login-card" id="loginForm">
+        <div class="mark">A</div>
+        <h1>Painel de acesso</h1>
+        <p>Entre com o email e senha cadastrados no Supabase para acessar o controle financeiro familiar.</p>
+        <div class="field">
+          <label for="loginEmail">Email</label>
+          <input id="loginEmail" type="email" autocomplete="email" required placeholder="seuemail@exemplo.com">
+        </div>
+        <div class="field" style="margin-top:12px">
+          <label for="loginPassword">Senha</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="Sua senha">
+        </div>
+        <div class="actions"><button class="btn primary" type="submit">Entrar</button></div>
+        <p id="loginHelp" style="margin-top:16px;font-size:13px"></p>
+        <details class="setup-box">
+          <summary>Configurar Supabase depois</summary>
+          <div class="field">
+            <label for="supabaseUrlInput">URL do Supabase</label>
+            <input id="supabaseUrlInput" type="url" placeholder="https://seu-projeto.supabase.co">
+          </div>
+          <div class="field">
+            <label for="supabaseAnonInput">Anon key publica</label>
+            <textarea id="supabaseAnonInput" placeholder="Cole a anon public key"></textarea>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="button" id="saveSupabaseBtn">Salvar Supabase</button>
+            <button class="btn" type="button" id="clearSupabaseBtn">Limpar</button>
+          </div>
+        </details>
+      </form>
+    </div>
+  </div>
+
+  <div class="app hidden" id="appScreen">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">A</div>
+        <div><strong>Controle Financeiro</strong><span>Sr. & Sra. Ambrosio</span></div>
+      </div>
+      <nav class="nav" aria-label="Areas do painel">
+        <button class="active" type="button" data-view="dashboard">Visao geral</button>
+        <button type="button" data-view="transactions">Lancamentos</button>
+        <button type="button" data-view="shopping">Compras</button>
+        <button type="button" data-view="reports">Relatorios</button>
+        <button type="button" data-view="settings">Configuracoes</button>
+      </nav>
+      <div class="sidebar-note">Os acessos sao validados pelo Supabase. Os lancamentos ficam salvos neste navegador.</div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h1>Controle Financeiro Sr. & Sra. Ambrosio</h1>
+          <p class="subtitle">Painel familiar para acompanhar receitas, despesas, compras e saldo mensal.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="printBtn">Imprimir/PDF</button>
+          <button class="btn" type="button" id="exportBtn">Exportar CSV</button>
+          <button class="btn primary" type="button" data-view-shortcut="transactions">Novo lancamento</button>
+          <button class="btn danger" type="button" id="logoutBtn">Sair</button>
+        </div>
+      </header>
+
+      <div class="grid kpis" aria-label="Indicadores financeiros">
+        <article class="kpi"><div class="label">Receitas recebidas</div><div class="value" id="incomeTotal">R$ 0,00</div><div class="hint" id="incomeHint">0 recebidas</div></article>
+        <article class="kpi"><div class="label">Despesas pagas</div><div class="value" id="expenseTotal">R$ 0,00</div><div class="hint" id="expenseHint">0 pagas</div></article>
+        <article class="kpi"><div class="label">Saldo atual</div><div class="value" id="balanceTotal">R$ 0,00</div><div class="hint">Recebidas menos pagas</div></article>
+        <article class="kpi"><div class="label">Pendencias</div><div class="value" id="pendingTotal">R$ 0,00</div><div class="hint" id="pendingHint">0 itens em aberto</div></article>
+      </div>
+
+      <div id="view-dashboard" class="view">
+        <div class="layout">
+          <section>
+            <div class="section-head"><h2>Resumo por tipo</h2><span class="tag blue" id="monthLabel">Mes atual</span></div>
+            <div class="chart" id="categoryChart"></div>
+          </section>
+          <section>
+            <div class="section-head"><h2>Proximas acoes</h2></div>
+            <div class="split">
+              <div class="mini"><strong>Receitas em aberto</strong><span id="plannedIncomeBox">Nada previsto para este mes.</span></div>
+              <div class="mini"><strong>Despesas em aberto</strong><span id="openExpenseBox">Nenhuma despesa em aberto.</span></div>
+              <div class="mini"><strong>Compras</strong><span id="shoppingBox">Nenhuma lista ativa.</span></div>
+              <div class="mini"><strong>Saude financeira</strong><span id="healthBox">Inclua lancamentos para ver o diagnostico.</span></div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="view-transactions" class="view hidden">
+        <div class="layout">
+          <section>
+            <div class="section-head"><h2>Lancamentos</h2></div>
+            <div class="filters">
+              <input id="searchInput" type="search" placeholder="Buscar descricao" aria-label="Buscar lancamentos">
+              <select id="typeFilter" aria-label="Filtrar por tipo"><option value="">Todos os tipos</option><option value="income">Receitas</option><option value="expense">Despesas</option></select>
+              <select id="statusFilter" aria-label="Filtrar por status"><option value="">Todos os status</option><option value="open">Em aberto</option><option value="done">Pago/recebido</option></select>
+              <select id="monthFilter" aria-label="Filtrar por mes"><option value="current">Mes atual</option><option value="all">Todos os meses</option></select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Data</th><th>Descricao</th><th>Tipo</th><th>Status</th><th>Valor</th><th class="row-actions">Acoes</th></tr></thead>
+                <tbody id="transactionRows"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="form-panel">
+            <div class="section-head"><h2 id="formTitle">Novo lancamento</h2></div>
+            <form id="transactionForm">
+              <input type="hidden" id="editId">
+              <div class="form-grid">
+                <div class="field"><label for="txType">Tipo</label><select id="txType" required><option value="income">Receita</option><option value="expense">Despesa</option></select></div>
+                <div class="field"><label for="txDate">Data</label><input id="txDate" type="date" required></div>
+                <div class="field full"><label for="txDescription">Descricao</label><input id="txDescription" type="text" required maxlength="80" placeholder="Ex.: Salario, mercado, energia"></div>
+                <div class="field"><label for="txAmount">Valor</label><input id="txAmount" type="number" min="0" step="0.01" required placeholder="0,00"></div>
+                <div class="field full"><label for="txNote">Observacao</label><textarea id="txNote" maxlength="180" placeholder="Detalhes opcionais"></textarea></div>
+              </div>
+              <div class="actions"><button class="btn primary" type="submit">Salvar lancamento</button><button class="btn" type="button" id="cancelEditBtn">Cancelar</button></div>
+            </form>
+          </section>
+        </div>
+      </div>
+
+      <div id="view-shopping" class="view hidden">
+        <div class="layout">
+          <section>
+            <div class="section-head"><h2>Lista de compras</h2><span class="tag" id="shoppingTotal">R$ 0,00</span></div>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Peguei</th><th>Item</th><th>Qtd.</th><th>Valor na compra</th><th>Total</th><th class="row-actions">Acoes</th></tr></thead>
+                <tbody id="shoppingRows"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="form-panel">
+            <div class="section-head"><h2>Novo item</h2></div>
+            <form id="shoppingForm">
+              <div class="form-grid">
+                <div class="field full"><label for="itemName">Item</label><input id="itemName" required maxlength="70" placeholder="Ex.: Arroz, leite, limpeza"></div>
+                <div class="field"><label for="itemQty">Quantidade</label><input id="itemQty" type="number" min="1" step="1" value="1" required></div>
+              </div>
+              <div class="actions"><button class="btn primary" type="submit">Adicionar item</button><button class="btn" type="button" id="shoppingToExpenseBtn">Gerar despesa</button></div>
+            </form>
+          </section>
+        </div>
+      </div>
+
+      <div id="view-reports" class="view hidden">
+        <section>
+          <div class="section-head"><h2>Relatorio rapido</h2><span class="tag blue">Exportavel</span></div>
+          <div class="split">
+            <div class="mini"><strong>Maior despesa</strong><span id="topCategoryReport">Ainda sem despesas.</span></div>
+            <div class="mini"><strong>Media de lancamentos</strong><span id="averageReport">Inclua lancamentos para calcular.</span></div>
+            <div class="mini"><strong>Total geral de receitas</strong><span id="allIncomeReport">R$ 0,00</span></div>
+            <div class="mini"><strong>Total geral de despesas</strong><span id="allExpenseReport">R$ 0,00</span></div>
+          </div>
+        </section>
+      </div>
+
+      <div id="view-settings" class="view hidden">
+        <section>
+          <div class="section-head"><h2>Configuracoes</h2></div>
+          <div class="form-grid">
+            <div class="field"><label for="familyName">Nome do painel</label><input id="familyName" maxlength="70"></div>
+            <div class="field"><label for="monthlyGoal">Meta de saldo mensal</label><input id="monthlyGoal" type="number" min="0" step="0.01"></div>
+            <div class="field full"><label for="settingsNote">Observacao da familia</label><textarea id="settingsNote" maxlength="220"></textarea></div>
+          </div>
+          <div class="actions"><button class="btn primary" type="button" id="saveSettingsBtn">Salvar configuracoes</button><button class="btn danger" type="button" id="resetBtn">Restaurar exemplo</button></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const DEFAULT_SUPABASE_URL = "";
+    const DEFAULT_SUPABASE_ANON_KEY = "";
+    const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const today = new Date().toISOString().slice(0, 10);
+    const monthKey = today.slice(0, 7);
+    const sessionKey = "ambrosio_supabase_session_v1";
+    const supabaseConfigKey = "ambrosio_supabase_public_config_v1";
+
+    const seed = {
+      settings: { familyName: "Controle Financeiro Sr. & Sra. Ambrosio", monthlyGoal: 1500, note: "Organizar a rotina financeira da residencia com lancamentos simples." },
+      transactions: [
+        { id: newId(), type: "income", date: `${monthKey}-05`, description: "Salario", amount: 6200, status: "done", note: "" },
+        { id: newId(), type: "income", date: `${monthKey}-12`, description: "Renda extra", amount: 850, status: "open", note: "" },
+        { id: newId(), type: "expense", date: `${monthKey}-06`, description: "Mercado", amount: 980, status: "done", note: "" },
+        { id: newId(), type: "expense", date: `${monthKey}-10`, description: "Energia", amount: 310, status: "open", note: "" },
+        { id: newId(), type: "expense", date: `${monthKey}-15`, description: "Plano de saude", amount: 720, status: "open", note: "" }
+      ],
+      shopping: [
+        { id: newId(), name: "Arroz", qty: 2, amount: 0, done: false },
+        { id: newId(), name: "Produtos de limpeza", qty: 1, amount: 0, done: false },
+        { id: newId(), name: "Frutas e verduras", qty: 1, amount: 0, done: false }
+      ]
+    };
+
+    let session = readSession();
+    let state = loadState();
+
+    function getSupabaseConfig() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(supabaseConfigKey) || "{}");
+        return {
+          url: saved.url || DEFAULT_SUPABASE_URL,
+          anonKey: saved.anonKey || DEFAULT_SUPABASE_ANON_KEY
+        };
+      } catch {
+        return { url: DEFAULT_SUPABASE_URL, anonKey: DEFAULT_SUPABASE_ANON_KEY };
+      }
+    }
+    function isSupabaseConfigured() {
+      const config = getSupabaseConfig();
+      return /^https:\/\/.+/i.test(config.url) && Boolean(config.anonKey);
+    }
+    function readSession() {
+      try { const raw = localStorage.getItem(sessionKey); return raw ? JSON.parse(raw) : null; } catch { return null; }
+    }
+    function writeSession(nextSession) {
+      session = nextSession;
+      if (nextSession) localStorage.setItem(sessionKey, JSON.stringify(nextSession));
+      else localStorage.removeItem(sessionKey);
+    }
+    function storageKey() {
+      const email = session?.user?.email || "local";
+      return `ambrosio_finance_panel_${email.toLowerCase()}`;
+    }
+    function loadState() {
+      try { const raw = localStorage.getItem(storageKey()); return raw ? JSON.parse(raw) : copySeed(); } catch { return copySeed(); }
+    }
+    function save() { localStorage.setItem(storageKey(), JSON.stringify(state)); }
+    function copySeed() { return JSON.parse(JSON.stringify(seed)); }
+    function newId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") return window.crypto.randomUUID();
+      return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+    async function login(email, password) {
+      const config = getSupabaseConfig();
+      if (!isSupabaseConfigured()) throw new Error("Site publicado. Agora configure o Supabase nesta tela para liberar o login.");
+      const response = await fetch(`${config.url.replace(/\/$/, "")}/auth/v1/token?grant_type=password`, {
+        method: "POST",
+        headers: { "apikey": config.anonKey, "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
+      const payload = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(payload.error_description || payload.msg || payload.message || "Email, senha ou usuario sem confirmacao no Supabase.");
+      writeSession({ access_token: payload.access_token, refresh_token: payload.refresh_token, expires_at: Date.now() + ((payload.expires_in || 3600) * 1000), user: payload.user || { email } });
+      state = loadState();
+      openApp();
+    }
+    function logout() {
+      writeSession(null);
+      document.querySelector("#appScreen").classList.add("hidden");
+      document.querySelector("#loginScreen").classList.remove("hidden");
+      document.querySelector("#loginPassword").value = "";
+    }
+    function openApp() {
+      document.querySelector("#loginScreen").classList.add("hidden");
+      document.querySelector("#appScreen").classList.remove("hidden");
+      document.querySelector("h1").textContent = state.settings.familyName;
+      renderAll();
+    }
+    function currency(value) { return money.format(Number(value) || 0); }
+    function isCurrentMonth(item) { return item.date && item.date.slice(0, 7) === monthKey; }
+    function showToast(message) {
+      const toast = document.querySelector("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2400);
+    }
+    function setView(view) {
+      document.querySelectorAll(".view").forEach((node) => node.classList.add("hidden"));
+      document.querySelector(`#view-${view}`).classList.remove("hidden");
+      document.querySelectorAll(".nav button").forEach((button) => button.classList.toggle("active", button.dataset.view === view));
+    }
+    function totals() {
+      const current = state.transactions.filter(isCurrentMonth);
+      const receivedIncome = current.filter((item) => item.type === "income" && item.status === "done").reduce((sum, item) => sum + item.amount, 0);
+      const paidExpense = current.filter((item) => item.type === "expense" && item.status === "done").reduce((sum, item) => sum + item.amount, 0);
+      const openIncome = current.filter((item) => item.type === "income" && item.status === "open").reduce((sum, item) => sum + item.amount, 0);
+      const openExpense = current.filter((item) => item.type === "expense" && item.status === "open").reduce((sum, item) => sum + item.amount, 0);
+      return { current, receivedIncome, paidExpense, openIncome, openExpense, balance: receivedIncome - paidExpense };
+    }
+    function renderKpis() {
+      const data = totals();
+      const doneIncome = data.current.filter((item) => item.type === "income" && item.status === "done").length;
+      const doneExpense = data.current.filter((item) => item.type === "expense" && item.status === "done").length;
+      const pendingCount = data.current.filter((item) => item.status === "open").length;
+      document.querySelector("#incomeTotal").textContent = currency(data.receivedIncome);
+      document.querySelector("#expenseTotal").textContent = currency(data.paidExpense);
+      document.querySelector("#balanceTotal").textContent = currency(data.balance);
+      document.querySelector("#pendingTotal").textContent = currency(data.openIncome + data.openExpense);
+      document.querySelector("#incomeHint").textContent = `${doneIncome} recebidas`;
+      document.querySelector("#expenseHint").textContent = `${doneExpense} pagas`;
+      document.querySelector("#pendingHint").textContent = `${pendingCount} itens em aberto`;
+      document.querySelector("#monthLabel").textContent = new Date(`${monthKey}-02T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    }
+    function renderChart() {
+      const data = totals();
+      const rows = [["Receitas recebidas", data.receivedIncome], ["Receitas em aberto", data.openIncome], ["Despesas pagas", data.paidExpense], ["Despesas em aberto", data.openExpense]].filter((row) => row[1] > 0);
+      const max = Math.max(...rows.map((row) => row[1]), 1);
+      const chart = document.querySelector("#categoryChart");
+      if (!rows.length) { chart.innerHTML = '<div class="empty">Nenhum lancamento cadastrado neste mes.</div>'; return; }
+      chart.innerHTML = rows.map(([label, amount]) => `<div class="bar-row"><strong>${escapeHtml(label)}</strong><div class="bar-track"><div class="bar-fill" style="width:${Math.max(6, (amount / max) * 100)}%"></div></div><span class="amount">${currency(amount)}</span></div>`).join("");
+    }
+    function transactionStatus(item) {
+      if (item.status === "done") return item.type === "income" ? "Recebido" : "Pago";
+      return "Em aberto";
+    }
+    function getFilteredTransactions() {
+      const search = document.querySelector("#searchInput")?.value.trim().toLowerCase() || "";
+      const type = document.querySelector("#typeFilter")?.value || "";
+      const status = document.querySelector("#statusFilter")?.value || "";
+      const month = document.querySelector("#monthFilter")?.value || "current";
+      return state.transactions.filter((item) => {
+        const text = `${item.description} ${item.note}`.toLowerCase();
+        return (!search || text.includes(search)) && (!type || item.type === type) && (!status || item.status === status) && (month === "all" || isCurrentMonth(item));
+      }).sort((a, b) => b.date.localeCompare(a.date));
+    }
+    function renderTransactions() {
+      const rows = getFilteredTransactions();
+      const body = document.querySelector("#transactionRows");
+      if (!rows.length) { body.innerHTML = '<tr><td colspan="6"><div class="empty">Nenhum lancamento encontrado.</div></td></tr>'; return; }
+      body.innerHTML = rows.map((item) => `
+        <tr>
+          <td data-label="Data">${formatDate(item.date)}</td>
+          <td data-label="Descricao"><strong>${escapeHtml(item.description)}</strong>${item.note ? `<br><span class="subtitle">${escapeHtml(item.note)}</span>` : ""}</td>
+          <td data-label="Tipo"><span class="tag ${item.type === "income" ? "good" : "bad"}">${item.type === "income" ? "Receita" : "Despesa"}</span></td>
+          <td data-label="Status"><select class="status-select" data-status="${item.id}" aria-label="Status de ${escapeHtml(item.description)}"><option value="open" ${item.status === "open" ? "selected" : ""}>Em aberto</option><option value="done" ${item.status === "done" ? "selected" : ""}>${item.type === "income" ? "Recebido" : "Pago"}</option></select></td>
+          <td data-label="Valor" class="money ${item.type}">${item.type === "income" ? "+" : "-"} ${currency(item.amount)}</td>
+          <td class="row-actions" data-label="Acoes"><button class="btn" type="button" data-edit="${item.id}">Editar</button><button class="btn danger" type="button" data-delete="${item.id}">Excluir</button></td>
+        </tr>`).join("");
+    }
+    function renderShopping() {
+      const body = document.querySelector("#shoppingRows");
+      const total = state.shopping.reduce((sum, item) => sum + item.qty * (Number(item.amount) || 0), 0);
+      const checked = state.shopping.filter((item) => item.done).length;
+      document.querySelector("#shoppingTotal").textContent = `${currency(total)} | ${checked}/${state.shopping.length} itens`;
+      if (!state.shopping.length) { body.innerHTML = '<tr><td colspan="6"><div class="empty">Lista de compras vazia.</div></td></tr>'; return; }
+      body.innerHTML = state.shopping.map((item) => `
+        <tr>
+          <td data-label="Peguei"><input type="checkbox" data-toggle-item="${item.id}" ${item.done ? "checked" : ""} aria-label="Marcar ${escapeHtml(item.name)}"></td>
+          <td data-label="Item"><strong>${escapeHtml(item.name)}</strong></td>
+          <td data-label="Qtd.">${item.qty}</td>
+          <td data-label="Valor"><input class="purchase-value" type="number" min="0" step="0.01" data-value-item="${item.id}" value="${item.amount || ""}" placeholder="0,00" aria-label="Valor de ${escapeHtml(item.name)}"></td>
+          <td data-label="Total">${currency(item.qty * (Number(item.amount) || 0))}</td>
+          <td class="row-actions" data-label="Acoes"><button class="btn danger" type="button" data-delete-item="${item.id}">Excluir</button></td>
+        </tr>`).join("");
+    }
+    function renderReports() {
+      const allIncome = state.transactions.filter((item) => item.type === "income" && item.status === "done").reduce((sum, item) => sum + item.amount, 0);
+      const allExpense = state.transactions.filter((item) => item.type === "expense" && item.status === "done").reduce((sum, item) => sum + item.amount, 0);
+      const expenses = state.transactions.filter((item) => item.type === "expense").sort((a, b) => b.amount - a.amount);
+      const top = expenses[0];
+      const average = state.transactions.length ? (allIncome + allExpense) / state.transactions.length : 0;
+      document.querySelector("#topCategoryReport").textContent = top ? `${top.description} com ${currency(top.amount)}.` : "Ainda sem despesas.";
+      document.querySelector("#averageReport").textContent = state.transactions.length ? `${currency(average)} por lancamento concluido.` : "Inclua lancamentos para calcular.";
+      document.querySelector("#allIncomeReport").textContent = currency(allIncome);
+      document.querySelector("#allExpenseReport").textContent = currency(allExpense);
+    }
+    function renderDashboardNotes() {
+      const data = totals();
+      const shoppingOpen = state.shopping.filter((item) => !item.done).reduce((sum, item) => sum + item.qty * (Number(item.amount) || 0), 0);
+      const goal = Number(state.settings.monthlyGoal) || 0;
+      document.querySelector("#plannedIncomeBox").textContent = data.openIncome ? `${currency(data.openIncome)} ainda para receber.` : "Nada previsto para este mes.";
+      document.querySelector("#openExpenseBox").textContent = data.openExpense ? `${currency(data.openExpense)} em despesas abertas.` : "Nenhuma despesa em aberto.";
+      document.querySelector("#shoppingBox").textContent = shoppingOpen ? `${currency(shoppingOpen)} em itens pendentes ou sem finalizar.` : "Nenhuma lista ativa.";
+      document.querySelector("#healthBox").textContent = data.balance >= goal ? `Saldo acima da meta de ${currency(goal)}.` : `Faltam ${currency(Math.max(goal - data.balance, 0))} para a meta mensal.`;
+    }
+    function renderSettings() {
+      document.querySelector("#familyName").value = state.settings.familyName;
+      document.querySelector("#monthlyGoal").value = state.settings.monthlyGoal;
+      document.querySelector("#settingsNote").value = state.settings.note;
+    }
+    function renderAll() { renderKpis(); renderChart(); renderTransactions(); renderShopping(); renderReports(); renderDashboardNotes(); renderSettings(); }
+    function formatDate(value) { return new Date(`${value}T12:00:00`).toLocaleDateString("pt-BR"); }
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[char]);
+    }
+    function resetForm() {
+      document.querySelector("#transactionForm").reset();
+      document.querySelector("#txDate").value = today;
+      document.querySelector("#editId").value = "";
+      document.querySelector("#formTitle").textContent = "Novo lancamento";
+    }
+    function editTransaction(id) {
+      const item = state.transactions.find((entry) => entry.id === id);
+      if (!item) return;
+      document.querySelector("#editId").value = item.id;
+      document.querySelector("#txType").value = item.type;
+      document.querySelector("#txDate").value = item.date;
+      document.querySelector("#txDescription").value = item.description;
+      document.querySelector("#txAmount").value = item.amount;
+      document.querySelector("#txNote").value = item.note;
+      document.querySelector("#formTitle").textContent = "Editar lancamento";
+      setView("transactions");
+    }
+    function exportCsv() {
+      const header = ["data", "tipo", "descricao", "status", "valor", "observacao"];
+      const lines = state.transactions.map((item) => [item.date, item.type === "income" ? "receita" : "despesa", item.description, transactionStatus(item), item.amount.toFixed(2), item.note].map((field) => `"${String(field).replaceAll('"', '""')}"`).join(","));
+      const blob = new Blob([[header.join(","), ...lines].join("\n")], { type: "text/csv;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "controle-financeiro-ambrosio.csv";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    function refreshSupabaseSetup() {
+      const config = getSupabaseConfig();
+      document.querySelector("#supabaseUrlInput").value = config.url;
+      document.querySelector("#supabaseAnonInput").value = config.anonKey;
+      document.querySelector("#loginHelp").textContent = isSupabaseConfigured()
+        ? "Login conectado ao Supabase."
+        : "Pode subir no GitHub agora. Depois que criar o Supabase, abra esta configuracao e cole URL + anon key.";
+    }
+    refreshSupabaseSetup();
+    document.querySelector("#saveSupabaseBtn").addEventListener("click", () => {
+      const url = document.querySelector("#supabaseUrlInput").value.trim();
+      const anonKey = document.querySelector("#supabaseAnonInput").value.trim();
+      localStorage.setItem(supabaseConfigKey, JSON.stringify({ url, anonKey }));
+      refreshSupabaseSetup();
+      showToast("Configuracao do Supabase salva neste navegador.");
+    });
+    document.querySelector("#clearSupabaseBtn").addEventListener("click", () => {
+      localStorage.removeItem(supabaseConfigKey);
+      refreshSupabaseSetup();
+      showToast("Configuracao removida.");
+    });
+    document.querySelector("#loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const button = event.target.querySelector("button");
+      button.disabled = true;
+      button.textContent = "Entrando...";
+      try {
+        await login(document.querySelector("#loginEmail").value.trim(), document.querySelector("#loginPassword").value);
+        showToast("Acesso liberado.");
+      } catch (error) {
+        showToast(error.message || "Nao foi possivel entrar.");
+      } finally {
+        button.disabled = false;
+        button.textContent = "Entrar";
+      }
+    });
+    document.querySelectorAll("[data-view], [data-view-shortcut]").forEach((button) => {
+      button.addEventListener("click", () => setView(button.dataset.view || button.dataset.viewShortcut));
+    });
+    document.querySelector("#transactionForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = document.querySelector("#editId").value || newId();
+      const existing = state.transactions.find((item) => item.id === id);
+      const entry = {
+        id,
+        type: document.querySelector("#txType").value,
+        date: document.querySelector("#txDate").value,
+        description: document.querySelector("#txDescription").value.trim(),
+        amount: Number(document.querySelector("#txAmount").value || 0),
+        status: existing?.status || "open",
+        note: document.querySelector("#txNote").value.trim()
+      };
+      state.transactions = state.transactions.some((item) => item.id === id) ? state.transactions.map((item) => item.id === id ? entry : item) : [entry, ...state.transactions];
+      save();
+      resetForm();
+      renderAll();
+      showToast("Lancamento salvo.");
+    });
+    document.querySelector("#transactionRows").addEventListener("click", (event) => {
+      const editId = event.target.dataset.edit;
+      const deleteId = event.target.dataset.delete;
+      if (editId) editTransaction(editId);
+      if (deleteId && confirm("Excluir este lancamento?")) {
+        state.transactions = state.transactions.filter((item) => item.id !== deleteId);
+        save();
+        renderAll();
+        showToast("Lancamento excluido.");
+      }
+    });
+    document.querySelector("#transactionRows").addEventListener("change", (event) => {
+      const statusId = event.target.dataset.status;
+      if (!statusId) return;
+      state.transactions = state.transactions.map((item) => item.id === statusId ? { ...item, status: event.target.value } : item);
+      save();
+      renderAll();
+      showToast("Status atualizado e calculos refeitos.");
+    });
+    document.querySelector("#shoppingForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      state.shopping.unshift({ id: newId(), name: document.querySelector("#itemName").value.trim(), qty: Number(document.querySelector("#itemQty").value || 1), amount: 0, done: false });
+      event.target.reset();
+      document.querySelector("#itemQty").value = 1;
+      save();
+      renderAll();
+      showToast("Item adicionado.");
+    });
+    document.querySelector("#shoppingRows").addEventListener("change", (event) => {
+      const toggleId = event.target.dataset.toggleItem;
+      const valueId = event.target.dataset.valueItem;
+      if (toggleId) state.shopping = state.shopping.map((item) => item.id === toggleId ? { ...item, done: event.target.checked } : item);
+      if (valueId) state.shopping = state.shopping.map((item) => item.id === valueId ? { ...item, amount: Number(event.target.value || 0) } : item);
+      save();
+      renderAll();
+    });
+    document.querySelector("#shoppingRows").addEventListener("click", (event) => {
+      const deleteId = event.target.dataset.deleteItem;
+      if (deleteId && confirm("Excluir este item?")) {
+        state.shopping = state.shopping.filter((item) => item.id !== deleteId);
+        save();
+        renderAll();
+      }
+    });
+    document.querySelector("#shoppingToExpenseBtn").addEventListener("click", () => {
+      const total = state.shopping.reduce((sum, item) => sum + item.qty * (Number(item.amount) || 0), 0);
+      if (!total) return showToast("Preencha os valores da compra antes de gerar a despesa.");
+      state.transactions.unshift({ id: newId(), type: "expense", date: today, description: "Lista de compras", amount: total, status: "open", note: `${state.shopping.length} itens registrados` });
+      save();
+      renderAll();
+      setView("transactions");
+      showToast("Despesa criada a partir da lista.");
+    });
+    document.querySelector("#saveSettingsBtn").addEventListener("click", () => {
+      state.settings.familyName = document.querySelector("#familyName").value.trim() || seed.settings.familyName;
+      state.settings.monthlyGoal = Number(document.querySelector("#monthlyGoal").value || 0);
+      state.settings.note = document.querySelector("#settingsNote").value.trim();
+      document.querySelector("h1").textContent = state.settings.familyName;
+      save();
+      renderAll();
+      showToast("Configuracoes salvas.");
+    });
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      if (!confirm("Restaurar os dados de exemplo?")) return;
+      state = copySeed();
+      save();
+      resetForm();
+      renderAll();
+      showToast("Dados restaurados.");
+    });
+    ["searchInput", "typeFilter", "statusFilter", "monthFilter"].forEach((id) => {
+      document.querySelector(`#${id}`).addEventListener("input", renderTransactions);
+    });
+    document.querySelector("#cancelEditBtn").addEventListener("click", resetForm);
+    document.querySelector("#printBtn").addEventListener("click", () => window.print());
+    document.querySelector("#exportBtn").addEventListener("click", exportCsv);
+    document.querySelector("#logoutBtn").addEventListener("click", logout);
+    document.querySelector("#txDate").value = today;
+    if (session?.access_token) openApp();
+  </script>
+</body>
+</html>
