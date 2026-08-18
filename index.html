@@ -1,0 +1,1234 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101418">
+  <title>Controle Financeiro Sr. & Sra. Ambrosio</title>
+  <style>
+    :root {
+      --bg: #f5f7f4;
+      --panel: #ffffff;
+      --ink: #192024;
+      --muted: #687178;
+      --line: #dce3df;
+      --brand: #146c64;
+      --brand-2: #0f4f64;
+      --good: #16794b;
+      --warn: #a16008;
+      --bad: #b33a3a;
+      --blue: #355f95;
+      --shadow: 0 12px 36px rgba(25, 32, 36, 0.08);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background:
+        linear-gradient(120deg, rgba(20, 108, 100, 0.08), transparent 42%),
+        linear-gradient(240deg, rgba(161, 96, 8, 0.08), transparent 38%),
+        var(--bg);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      min-height: 100vh;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+    }
+
+    button {
+      border: 0;
+      cursor: pointer;
+    }
+
+    .app {
+      display: grid;
+      grid-template-columns: 260px minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    .sidebar {
+      background: #11181c;
+      color: #eef5f1;
+      padding: 22px 16px;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow: auto;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 4px 6px 22px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+      margin-bottom: 18px;
+    }
+
+    .mark {
+      width: 42px;
+      height: 42px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, #20a18f, #f4b740);
+      display: grid;
+      place-items: center;
+      color: #11181c;
+      font-weight: 900;
+      letter-spacing: 0;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.35);
+    }
+
+    .brand strong {
+      display: block;
+      font-size: 15px;
+      line-height: 1.25;
+    }
+
+    .brand span {
+      display: block;
+      color: #aab9b5;
+      font-size: 12px;
+      margin-top: 2px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 7px;
+    }
+
+    .nav button {
+      min-height: 42px;
+      border-radius: 8px;
+      color: #dce8e4;
+      background: transparent;
+      text-align: left;
+      padding: 10px 12px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .nav button.active,
+    .nav button:hover {
+      background: rgba(255, 255, 255, 0.11);
+      color: #ffffff;
+    }
+
+    .sidebar-note {
+      margin-top: 22px;
+      padding: 14px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.08);
+      color: #c7d5d1;
+      font-size: 13px;
+      line-height: 1.45;
+    }
+
+    main {
+      padding: 26px;
+      min-width: 0;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-bottom: 22px;
+    }
+
+    h1 {
+      font-size: clamp(24px, 3vw, 34px);
+      margin: 0 0 6px;
+      letter-spacing: 0;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      min-height: 40px;
+      border-radius: 8px;
+      padding: 9px 13px;
+      background: #e6eee9;
+      color: var(--ink);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .btn.primary {
+      background: var(--brand);
+      color: #ffffff;
+    }
+
+    .btn.danger {
+      background: #f4dddd;
+      color: var(--bad);
+    }
+
+    .btn:focus-visible,
+    input:focus-visible,
+    select:focus-visible,
+    textarea:focus-visible {
+      outline: 3px solid rgba(20, 108, 100, 0.28);
+      outline-offset: 2px;
+    }
+
+    .grid {
+      display: grid;
+      gap: 14px;
+    }
+
+    .kpis {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      margin-bottom: 18px;
+    }
+
+    .kpi {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      padding: 16px;
+      box-shadow: var(--shadow);
+      min-height: 118px;
+    }
+
+    .kpi .label {
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .kpi .value {
+      margin-top: 12px;
+      font-size: clamp(21px, 2.3vw, 30px);
+      font-weight: 900;
+      word-break: break-word;
+    }
+
+    .kpi .hint {
+      color: var(--muted);
+      font-size: 13px;
+      margin-top: 7px;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(320px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    section,
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+    }
+
+    section {
+      padding: 18px;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    h2 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 0;
+    }
+
+    .filters {
+      display: grid;
+      grid-template-columns: 1.2fr repeat(3, minmax(140px, 0.5fr));
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .field {
+      display: grid;
+      gap: 6px;
+    }
+
+    label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #364147;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      min-height: 40px;
+      border-radius: 8px;
+      border: 1px solid #cfd8d3;
+      background: #ffffff;
+      color: var(--ink);
+      padding: 9px 11px;
+    }
+
+    textarea {
+      min-height: 82px;
+      resize: vertical;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .full { grid-column: 1 / -1; }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 14px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 760px;
+      background: #fff;
+    }
+
+    th,
+    td {
+      padding: 12px;
+      border-bottom: 1px solid var(--line);
+      text-align: left;
+      vertical-align: middle;
+      font-size: 14px;
+    }
+
+    th {
+      color: #4b565d;
+      background: #f8faf8;
+      font-size: 12px;
+      text-transform: uppercase;
+    }
+
+    tr:last-child td { border-bottom: 0; }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      min-height: 26px;
+      border-radius: 999px;
+      padding: 4px 9px;
+      font-size: 12px;
+      font-weight: 800;
+      background: #edf2ef;
+      color: #334047;
+      white-space: nowrap;
+    }
+
+    .tag.good { background: #dff1e8; color: var(--good); }
+    .tag.warn { background: #fff0d6; color: var(--warn); }
+    .tag.bad { background: #f6dfdf; color: var(--bad); }
+    .tag.blue { background: #e1eaf7; color: var(--blue); }
+
+    .money.income { color: var(--good); font-weight: 900; }
+    .money.expense { color: var(--bad); font-weight: 900; }
+
+    .empty {
+      padding: 28px;
+      color: var(--muted);
+      text-align: center;
+      border: 1px dashed #c9d3ce;
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .chart {
+      display: grid;
+      gap: 11px;
+      margin-top: 8px;
+    }
+
+    .bar-row {
+      display: grid;
+      grid-template-columns: 110px minmax(0, 1fr) 86px;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+    }
+
+    .bar-track {
+      height: 12px;
+      background: #e7ece8;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--brand), #f2b749);
+    }
+
+    .split {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .mini {
+      padding: 14px;
+      border: 1px solid var(--line);
+      border-radius: 8px;
+      background: #fbfcfb;
+    }
+
+    .mini strong {
+      display: block;
+      margin-bottom: 6px;
+    }
+
+    .mini span {
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .hidden { display: none !important; }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: #11181c;
+      color: #fff;
+      padding: 12px 14px;
+      border-radius: 8px;
+      box-shadow: var(--shadow);
+      max-width: min(360px, calc(100vw - 36px));
+      opacity: 0;
+      transform: translateY(12px);
+      pointer-events: none;
+      transition: 160ms ease;
+      z-index: 20;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    @media (max-width: 1040px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar {
+        position: static;
+        height: auto;
+      }
+      .nav {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+      .layout,
+      .kpis {
+        grid-template-columns: 1fr 1fr;
+      }
+      .filters {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 720px) {
+      main { padding: 18px 12px; }
+      .topbar,
+      .section-head {
+        display: grid;
+      }
+      .toolbar {
+        justify-content: stretch;
+      }
+      .toolbar .btn,
+      .actions .btn {
+        justify-content: center;
+        flex: 1 1 150px;
+      }
+      .nav,
+      .layout,
+      .kpis,
+      .filters,
+      .form-grid,
+      .split {
+        grid-template-columns: 1fr;
+      }
+      .bar-row {
+        grid-template-columns: 86px minmax(0, 1fr);
+      }
+      .bar-row .amount {
+        grid-column: 2;
+      }
+    }
+
+    @media print {
+      .sidebar,
+      .toolbar,
+      .form-panel,
+      .filters,
+      .row-actions,
+      .toast {
+        display: none !important;
+      }
+      .app { display: block; }
+      main { padding: 0; }
+      body { background: #fff; }
+      section,
+      .kpi {
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="mark">A</div>
+        <div>
+          <strong>Controle Financeiro</strong>
+          <span>Sr. & Sra. Ambrosio</span>
+        </div>
+      </div>
+      <nav class="nav" aria-label="Areas do painel">
+        <button class="active" type="button" data-view="dashboard">Visao geral</button>
+        <button type="button" data-view="transactions">Lancamentos</button>
+        <button type="button" data-view="shopping">Compras</button>
+        <button type="button" data-view="reports">Relatorios</button>
+        <button type="button" data-view="settings">Configuracoes</button>
+      </nav>
+      <div class="sidebar-note">
+        Dados salvos neste navegador. Ideal para publicar no GitHub Pages sem banco de dados.
+      </div>
+    </aside>
+
+    <main>
+      <header class="topbar">
+        <div>
+          <h1>Controle Financeiro Sr. & Sra. Ambrosio</h1>
+          <p class="subtitle">Painel familiar para acompanhar receitas, despesas, custos fixos, compras e saldo mensal.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn" type="button" id="printBtn">Imprimir/PDF</button>
+          <button class="btn" type="button" id="exportBtn">Exportar CSV</button>
+          <button class="btn primary" type="button" data-view-shortcut="transactions">Novo lancamento</button>
+        </div>
+      </header>
+
+      <div class="grid kpis" aria-label="Indicadores financeiros">
+        <article class="kpi">
+          <div class="label">Receitas do mes</div>
+          <div class="value" id="incomeTotal">R$ 0,00</div>
+          <div class="hint" id="incomeHint">0 recebidas</div>
+        </article>
+        <article class="kpi">
+          <div class="label">Despesas do mes</div>
+          <div class="value" id="expenseTotal">R$ 0,00</div>
+          <div class="hint" id="expenseHint">0 pagas</div>
+        </article>
+        <article class="kpi">
+          <div class="label">Saldo atual</div>
+          <div class="value" id="balanceTotal">R$ 0,00</div>
+          <div class="hint">Receitas menos despesas</div>
+        </article>
+        <article class="kpi">
+          <div class="label">Pendencias</div>
+          <div class="value" id="pendingTotal">R$ 0,00</div>
+          <div class="hint" id="pendingHint">0 itens em aberto</div>
+        </article>
+      </div>
+
+      <div id="view-dashboard" class="view">
+        <div class="layout">
+          <section>
+            <div class="section-head">
+              <h2>Resumo por categoria</h2>
+              <span class="tag blue" id="monthLabel">Mes atual</span>
+            </div>
+            <div class="chart" id="categoryChart"></div>
+          </section>
+          <section>
+            <div class="section-head">
+              <h2>Proximas acoes</h2>
+            </div>
+            <div class="split">
+              <div class="mini">
+                <strong>Receitas previstas</strong>
+                <span id="plannedIncomeBox">Nada previsto para este mes.</span>
+              </div>
+              <div class="mini">
+                <strong>Despesas abertas</strong>
+                <span id="openExpenseBox">Nenhuma despesa em aberto.</span>
+              </div>
+              <div class="mini">
+                <strong>Compras</strong>
+                <span id="shoppingBox">Nenhuma lista ativa.</span>
+              </div>
+              <div class="mini">
+                <strong>Saude financeira</strong>
+                <span id="healthBox">Inclua lancamentos para ver o diagnostico.</span>
+              </div>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <div id="view-transactions" class="view hidden">
+        <div class="layout">
+          <section>
+            <div class="section-head">
+              <h2>Lancamentos</h2>
+              <button class="btn danger" type="button" id="clearDoneBtn">Limpar pagos/recebidos</button>
+            </div>
+            <div class="filters">
+              <input id="searchInput" type="search" placeholder="Buscar descricao, categoria ou responsavel" aria-label="Buscar lancamentos">
+              <select id="typeFilter" aria-label="Filtrar por tipo">
+                <option value="">Todos os tipos</option>
+                <option value="income">Receitas</option>
+                <option value="expense">Despesas</option>
+              </select>
+              <select id="statusFilter" aria-label="Filtrar por status">
+                <option value="">Todos os status</option>
+                <option value="open">Em aberto</option>
+                <option value="done">Concluidos</option>
+              </select>
+              <select id="monthFilter" aria-label="Filtrar por mes">
+                <option value="current">Mes atual</option>
+                <option value="all">Todos os meses</option>
+              </select>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Data</th>
+                    <th>Descricao</th>
+                    <th>Categoria</th>
+                    <th>Tipo</th>
+                    <th>Status</th>
+                    <th>Valor</th>
+                    <th class="row-actions">Acoes</th>
+                  </tr>
+                </thead>
+                <tbody id="transactionRows"></tbody>
+              </table>
+            </div>
+          </section>
+
+          <section class="form-panel">
+            <div class="section-head">
+              <h2 id="formTitle">Novo lancamento</h2>
+            </div>
+            <form id="transactionForm">
+              <input type="hidden" id="editId">
+              <div class="form-grid">
+                <div class="field">
+                  <label for="txType">Tipo</label>
+                  <select id="txType" required>
+                    <option value="income">Receita</option>
+                    <option value="expense">Despesa</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="txDate">Data</label>
+                  <input id="txDate" type="date" required>
+                </div>
+                <div class="field full">
+                  <label for="txDescription">Descricao</label>
+                  <input id="txDescription" type="text" required maxlength="80" placeholder="Ex.: Salario, mercado, energia">
+                </div>
+                <div class="field">
+                  <label for="txCategory">Categoria</label>
+                  <input id="txCategory" type="text" required maxlength="40" placeholder="Moradia, alimentacao">
+                </div>
+                <div class="field">
+                  <label for="txResponsible">Responsavel</label>
+                  <input id="txResponsible" type="text" maxlength="40" placeholder="Sr., Sra., familia">
+                </div>
+                <div class="field">
+                  <label for="txAmount">Valor</label>
+                  <input id="txAmount" type="number" min="0" step="0.01" required placeholder="0,00">
+                </div>
+                <div class="field">
+                  <label for="txStatus">Status</label>
+                  <select id="txStatus" required>
+                    <option value="open">Em aberto</option>
+                    <option value="done">Pago/recebido</option>
+                  </select>
+                </div>
+                <div class="field full">
+                  <label for="txNote">Observacao</label>
+                  <textarea id="txNote" maxlength="180" placeholder="Detalhes opcionais"></textarea>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn primary" type="submit">Salvar lancamento</button>
+                <button class="btn" type="button" id="cancelEditBtn">Cancelar</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+
+      <div id="view-shopping" class="view hidden">
+        <div class="layout">
+          <section>
+            <div class="section-head">
+              <h2>Lista de compras</h2>
+              <span class="tag" id="shoppingTotal">R$ 0,00</span>
+            </div>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Item</th>
+                    <th>Quantidade</th>
+                    <th>Valor estimado</th>
+                    <th>Status</th>
+                    <th class="row-actions">Acoes</th>
+                  </tr>
+                </thead>
+                <tbody id="shoppingRows"></tbody>
+              </table>
+            </div>
+          </section>
+          <section class="form-panel">
+            <div class="section-head">
+              <h2>Novo item</h2>
+            </div>
+            <form id="shoppingForm">
+              <div class="form-grid">
+                <div class="field full">
+                  <label for="itemName">Item</label>
+                  <input id="itemName" required maxlength="70" placeholder="Ex.: Arroz, remedio, material">
+                </div>
+                <div class="field">
+                  <label for="itemQty">Quantidade</label>
+                  <input id="itemQty" type="number" min="1" step="1" value="1" required>
+                </div>
+                <div class="field">
+                  <label for="itemAmount">Valor estimado</label>
+                  <input id="itemAmount" type="number" min="0" step="0.01" required>
+                </div>
+              </div>
+              <div class="actions">
+                <button class="btn primary" type="submit">Adicionar item</button>
+                <button class="btn" type="button" id="shoppingToExpenseBtn">Gerar despesa</button>
+              </div>
+            </form>
+          </section>
+        </div>
+      </div>
+
+      <div id="view-reports" class="view hidden">
+        <section>
+          <div class="section-head">
+            <h2>Relatorio rapido</h2>
+            <span class="tag blue">Exportavel</span>
+          </div>
+          <div class="split">
+            <div class="mini">
+              <strong>Maior categoria de despesa</strong>
+              <span id="topCategoryReport">Ainda sem despesas.</span>
+            </div>
+            <div class="mini">
+              <strong>Media de lancamentos</strong>
+              <span id="averageReport">Inclua lancamentos para calcular.</span>
+            </div>
+            <div class="mini">
+              <strong>Total geral de receitas</strong>
+              <span id="allIncomeReport">R$ 0,00</span>
+            </div>
+            <div class="mini">
+              <strong>Total geral de despesas</strong>
+              <span id="allExpenseReport">R$ 0,00</span>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <div id="view-settings" class="view hidden">
+        <section>
+          <div class="section-head">
+            <h2>Configuracoes</h2>
+          </div>
+          <div class="form-grid">
+            <div class="field">
+              <label for="familyName">Nome do painel</label>
+              <input id="familyName" maxlength="70">
+            </div>
+            <div class="field">
+              <label for="monthlyGoal">Meta de saldo mensal</label>
+              <input id="monthlyGoal" type="number" min="0" step="0.01">
+            </div>
+            <div class="field full">
+              <label for="settingsNote">Observacao da familia</label>
+              <textarea id="settingsNote" maxlength="220"></textarea>
+            </div>
+          </div>
+          <div class="actions">
+            <button class="btn primary" type="button" id="saveSettingsBtn">Salvar configuracoes</button>
+            <button class="btn danger" type="button" id="resetBtn">Restaurar exemplo</button>
+          </div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script>
+    const money = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" });
+    const today = new Date().toISOString().slice(0, 10);
+    const monthKey = today.slice(0, 7);
+    const storageKey = "ambrosio_static_finance_panel_v1";
+
+    const seed = {
+      settings: {
+        familyName: "Controle Financeiro Sr. & Sra. Ambrosio",
+        monthlyGoal: 1500,
+        note: "Organizar a rotina financeira da residencia com lancamentos simples."
+      },
+      transactions: [
+        { id: newId(), type: "income", date: `${monthKey}-05`, description: "Salario", category: "Receita principal", responsible: "Familia", amount: 6200, status: "done", note: "" },
+        { id: newId(), type: "income", date: `${monthKey}-12`, description: "Renda extra", category: "Servicos", responsible: "Familia", amount: 850, status: "open", note: "" },
+        { id: newId(), type: "expense", date: `${monthKey}-06`, description: "Mercado", category: "Alimentacao", responsible: "Casa", amount: 980, status: "done", note: "" },
+        { id: newId(), type: "expense", date: `${monthKey}-10`, description: "Energia", category: "Moradia", responsible: "Casa", amount: 310, status: "open", note: "" },
+        { id: newId(), type: "expense", date: `${monthKey}-15`, description: "Plano de saude", category: "Saude", responsible: "Familia", amount: 720, status: "open", note: "" }
+      ],
+      shopping: [
+        { id: newId(), name: "Arroz", qty: 2, amount: 32, done: false },
+        { id: newId(), name: "Produtos de limpeza", qty: 1, amount: 95, done: false },
+        { id: newId(), name: "Frutas e verduras", qty: 1, amount: 120, done: true }
+      ]
+    };
+
+    let state = load();
+
+    function load() {
+      try {
+        const raw = localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : copySeed();
+      } catch {
+        return copySeed();
+      }
+    }
+
+    function copySeed() {
+      return JSON.parse(JSON.stringify(seed));
+    }
+
+    function newId() {
+      if (window.crypto && typeof window.crypto.randomUUID === "function") {
+        return window.crypto.randomUUID();
+      }
+      return `id-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    }
+
+    function save() {
+      localStorage.setItem(storageKey, JSON.stringify(state));
+    }
+
+    function currency(value) {
+      return money.format(Number(value) || 0);
+    }
+
+    function isCurrentMonth(item) {
+      return item.date && item.date.slice(0, 7) === monthKey;
+    }
+
+    function showToast(message) {
+      const toast = document.querySelector("#toast");
+      toast.textContent = message;
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+
+    function setView(view) {
+      document.querySelectorAll(".view").forEach((node) => node.classList.add("hidden"));
+      document.querySelector(`#view-${view}`).classList.remove("hidden");
+      document.querySelectorAll(".nav button").forEach((button) => {
+        button.classList.toggle("active", button.dataset.view === view);
+      });
+    }
+
+    function totals() {
+      const current = state.transactions.filter(isCurrentMonth);
+      const income = current.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
+      const expense = current.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+      const pending = current.filter((item) => item.status === "open").reduce((sum, item) => sum + item.amount, 0);
+      return { current, income, expense, balance: income - expense, pending };
+    }
+
+    function renderKpis() {
+      const data = totals();
+      const doneIncome = data.current.filter((item) => item.type === "income" && item.status === "done").length;
+      const doneExpense = data.current.filter((item) => item.type === "expense" && item.status === "done").length;
+      const pendingCount = data.current.filter((item) => item.status === "open").length;
+      document.querySelector("#incomeTotal").textContent = currency(data.income);
+      document.querySelector("#expenseTotal").textContent = currency(data.expense);
+      document.querySelector("#balanceTotal").textContent = currency(data.balance);
+      document.querySelector("#pendingTotal").textContent = currency(data.pending);
+      document.querySelector("#incomeHint").textContent = `${doneIncome} recebidas`;
+      document.querySelector("#expenseHint").textContent = `${doneExpense} pagas`;
+      document.querySelector("#pendingHint").textContent = `${pendingCount} itens em aberto`;
+      document.querySelector("#monthLabel").textContent = new Date(`${monthKey}-02T12:00:00`).toLocaleDateString("pt-BR", { month: "long", year: "numeric" });
+    }
+
+    function renderChart() {
+      const expenses = state.transactions.filter((item) => item.type === "expense" && isCurrentMonth(item));
+      const grouped = expenses.reduce((map, item) => {
+        map[item.category] = (map[item.category] || 0) + item.amount;
+        return map;
+      }, {});
+      const rows = Object.entries(grouped).sort((a, b) => b[1] - a[1]);
+      const max = Math.max(...rows.map((row) => row[1]), 1);
+      const chart = document.querySelector("#categoryChart");
+      if (!rows.length) {
+        chart.innerHTML = '<div class="empty">Nenhuma despesa cadastrada neste mes.</div>';
+        return;
+      }
+      chart.innerHTML = rows.map(([category, amount]) => `
+        <div class="bar-row">
+          <strong>${escapeHtml(category)}</strong>
+          <div class="bar-track"><div class="bar-fill" style="width:${Math.max(6, (amount / max) * 100)}%"></div></div>
+          <span class="amount">${currency(amount)}</span>
+        </div>
+      `).join("");
+    }
+
+    function transactionStatus(item) {
+      if (item.status === "done") return item.type === "income" ? "Recebido" : "Pago";
+      return "Em aberto";
+    }
+
+    function statusClass(item) {
+      if (item.status === "done") return "good";
+      return item.type === "income" ? "blue" : "warn";
+    }
+
+    function getFilteredTransactions() {
+      const search = document.querySelector("#searchInput")?.value.trim().toLowerCase() || "";
+      const type = document.querySelector("#typeFilter")?.value || "";
+      const status = document.querySelector("#statusFilter")?.value || "";
+      const month = document.querySelector("#monthFilter")?.value || "current";
+      return state.transactions.filter((item) => {
+        const text = `${item.description} ${item.category} ${item.responsible}`.toLowerCase();
+        return (!search || text.includes(search))
+          && (!type || item.type === type)
+          && (!status || item.status === status)
+          && (month === "all" || isCurrentMonth(item));
+      }).sort((a, b) => b.date.localeCompare(a.date));
+    }
+
+    function renderTransactions() {
+      const rows = getFilteredTransactions();
+      const body = document.querySelector("#transactionRows");
+      if (!rows.length) {
+        body.innerHTML = '<tr><td colspan="7"><div class="empty">Nenhum lancamento encontrado.</div></td></tr>';
+        return;
+      }
+      body.innerHTML = rows.map((item) => `
+        <tr>
+          <td>${formatDate(item.date)}</td>
+          <td><strong>${escapeHtml(item.description)}</strong><br><span class="subtitle">${escapeHtml(item.responsible || "Sem responsavel")}</span></td>
+          <td>${escapeHtml(item.category)}</td>
+          <td><span class="tag ${item.type === "income" ? "good" : "bad"}">${item.type === "income" ? "Receita" : "Despesa"}</span></td>
+          <td><span class="tag ${statusClass(item)}">${transactionStatus(item)}</span></td>
+          <td class="money ${item.type}">${item.type === "income" ? "+" : "-"} ${currency(item.amount)}</td>
+          <td class="row-actions">
+            <button class="btn" type="button" data-edit="${item.id}">Editar</button>
+            <button class="btn danger" type="button" data-delete="${item.id}">Excluir</button>
+          </td>
+        </tr>
+      `).join("");
+    }
+
+    function renderShopping() {
+      const body = document.querySelector("#shoppingRows");
+      const total = state.shopping.reduce((sum, item) => sum + item.qty * item.amount, 0);
+      document.querySelector("#shoppingTotal").textContent = currency(total);
+      if (!state.shopping.length) {
+        body.innerHTML = '<tr><td colspan="5"><div class="empty">Lista de compras vazia.</div></td></tr>';
+        return;
+      }
+      body.innerHTML = state.shopping.map((item) => `
+        <tr>
+          <td><strong>${escapeHtml(item.name)}</strong></td>
+          <td>${item.qty}</td>
+          <td>${currency(item.qty * item.amount)}</td>
+          <td><button class="tag ${item.done ? "good" : "warn"}" type="button" data-toggle-item="${item.id}">${item.done ? "Comprado" : "Pendente"}</button></td>
+          <td class="row-actions"><button class="btn danger" type="button" data-delete-item="${item.id}">Excluir</button></td>
+        </tr>
+      `).join("");
+    }
+
+    function renderReports() {
+      const allIncome = state.transactions.filter((item) => item.type === "income").reduce((sum, item) => sum + item.amount, 0);
+      const allExpense = state.transactions.filter((item) => item.type === "expense").reduce((sum, item) => sum + item.amount, 0);
+      const expenses = state.transactions.filter((item) => item.type === "expense");
+      const grouped = expenses.reduce((map, item) => {
+        map[item.category] = (map[item.category] || 0) + item.amount;
+        return map;
+      }, {});
+      const top = Object.entries(grouped).sort((a, b) => b[1] - a[1])[0];
+      const average = state.transactions.length ? (allIncome + allExpense) / state.transactions.length : 0;
+      document.querySelector("#topCategoryReport").textContent = top ? `${top[0]} concentra ${currency(top[1])}.` : "Ainda sem despesas.";
+      document.querySelector("#averageReport").textContent = state.transactions.length ? `${currency(average)} por lancamento.` : "Inclua lancamentos para calcular.";
+      document.querySelector("#allIncomeReport").textContent = currency(allIncome);
+      document.querySelector("#allExpenseReport").textContent = currency(allExpense);
+    }
+
+    function renderDashboardNotes() {
+      const data = totals();
+      const plannedIncome = data.current.filter((item) => item.type === "income" && item.status === "open").reduce((sum, item) => sum + item.amount, 0);
+      const openExpenses = data.current.filter((item) => item.type === "expense" && item.status === "open").reduce((sum, item) => sum + item.amount, 0);
+      const shoppingOpen = state.shopping.filter((item) => !item.done).reduce((sum, item) => sum + item.qty * item.amount, 0);
+      const goal = Number(state.settings.monthlyGoal) || 0;
+      document.querySelector("#plannedIncomeBox").textContent = plannedIncome ? `${currency(plannedIncome)} ainda previsto para entrada.` : "Nada previsto para este mes.";
+      document.querySelector("#openExpenseBox").textContent = openExpenses ? `${currency(openExpenses)} em despesas abertas.` : "Nenhuma despesa em aberto.";
+      document.querySelector("#shoppingBox").textContent = shoppingOpen ? `${currency(shoppingOpen)} em itens pendentes.` : "Nenhuma lista ativa.";
+      document.querySelector("#healthBox").textContent = data.balance >= goal
+        ? `Saldo acima da meta de ${currency(goal)}.`
+        : `Faltam ${currency(Math.max(goal - data.balance, 0))} para a meta mensal.`;
+    }
+
+    function renderSettings() {
+      document.querySelector("#familyName").value = state.settings.familyName;
+      document.querySelector("#monthlyGoal").value = state.settings.monthlyGoal;
+      document.querySelector("#settingsNote").value = state.settings.note;
+    }
+
+    function renderAll() {
+      renderKpis();
+      renderChart();
+      renderTransactions();
+      renderShopping();
+      renderReports();
+      renderDashboardNotes();
+      renderSettings();
+    }
+
+    function formatDate(value) {
+      return new Date(`${value}T12:00:00`).toLocaleDateString("pt-BR");
+    }
+
+    function escapeHtml(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#39;"
+      })[char]);
+    }
+
+    function resetForm() {
+      document.querySelector("#transactionForm").reset();
+      document.querySelector("#txDate").value = today;
+      document.querySelector("#editId").value = "";
+      document.querySelector("#formTitle").textContent = "Novo lancamento";
+    }
+
+    function editTransaction(id) {
+      const item = state.transactions.find((entry) => entry.id === id);
+      if (!item) return;
+      document.querySelector("#editId").value = item.id;
+      document.querySelector("#txType").value = item.type;
+      document.querySelector("#txDate").value = item.date;
+      document.querySelector("#txDescription").value = item.description;
+      document.querySelector("#txCategory").value = item.category;
+      document.querySelector("#txResponsible").value = item.responsible;
+      document.querySelector("#txAmount").value = item.amount;
+      document.querySelector("#txStatus").value = item.status;
+      document.querySelector("#txNote").value = item.note;
+      document.querySelector("#formTitle").textContent = "Editar lancamento";
+      setView("transactions");
+    }
+
+    function exportCsv() {
+      const header = ["data", "tipo", "descricao", "categoria", "responsavel", "status", "valor", "observacao"];
+      const lines = state.transactions.map((item) => [
+        item.date,
+        item.type === "income" ? "receita" : "despesa",
+        item.description,
+        item.category,
+        item.responsible,
+        item.status,
+        item.amount.toFixed(2),
+        item.note
+      ].map((field) => `"${String(field).replaceAll('"', '""')}"`).join(","));
+      const blob = new Blob([[header.join(","), ...lines].join("\n")], { type: "text/csv;charset=utf-8" });
+      const link = document.createElement("a");
+      link.href = URL.createObjectURL(blob);
+      link.download = "controle-financeiro-ambrosio.csv";
+      link.click();
+      URL.revokeObjectURL(link.href);
+    }
+
+    document.querySelectorAll("[data-view], [data-view-shortcut]").forEach((button) => {
+      button.addEventListener("click", () => setView(button.dataset.view || button.dataset.viewShortcut));
+    });
+
+    document.querySelector("#transactionForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const id = document.querySelector("#editId").value || newId();
+      const entry = {
+        id,
+        type: document.querySelector("#txType").value,
+        date: document.querySelector("#txDate").value,
+        description: document.querySelector("#txDescription").value.trim(),
+        category: document.querySelector("#txCategory").value.trim(),
+        responsible: document.querySelector("#txResponsible").value.trim(),
+        amount: Number(document.querySelector("#txAmount").value || 0),
+        status: document.querySelector("#txStatus").value,
+        note: document.querySelector("#txNote").value.trim()
+      };
+      state.transactions = state.transactions.some((item) => item.id === id)
+        ? state.transactions.map((item) => item.id === id ? entry : item)
+        : [entry, ...state.transactions];
+      save();
+      resetForm();
+      renderAll();
+      showToast("Lancamento salvo.");
+    });
+
+    document.querySelector("#transactionRows").addEventListener("click", (event) => {
+      const editId = event.target.dataset.edit;
+      const deleteId = event.target.dataset.delete;
+      if (editId) editTransaction(editId);
+      if (deleteId && confirm("Excluir este lancamento?")) {
+        state.transactions = state.transactions.filter((item) => item.id !== deleteId);
+        save();
+        renderAll();
+        showToast("Lancamento excluido.");
+      }
+    });
+
+    document.querySelector("#shoppingForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      state.shopping.unshift({
+        id: newId(),
+        name: document.querySelector("#itemName").value.trim(),
+        qty: Number(document.querySelector("#itemQty").value || 1),
+        amount: Number(document.querySelector("#itemAmount").value || 0),
+        done: false
+      });
+      event.target.reset();
+      document.querySelector("#itemQty").value = 1;
+      save();
+      renderAll();
+      showToast("Item adicionado.");
+    });
+
+    document.querySelector("#shoppingRows").addEventListener("click", (event) => {
+      const toggleId = event.target.dataset.toggleItem;
+      const deleteId = event.target.dataset.deleteItem;
+      if (toggleId) {
+        state.shopping = state.shopping.map((item) => item.id === toggleId ? { ...item, done: !item.done } : item);
+        save();
+        renderAll();
+      }
+      if (deleteId && confirm("Excluir este item?")) {
+        state.shopping = state.shopping.filter((item) => item.id !== deleteId);
+        save();
+        renderAll();
+      }
+    });
+
+    document.querySelector("#shoppingToExpenseBtn").addEventListener("click", () => {
+      const total = state.shopping.reduce((sum, item) => sum + item.qty * item.amount, 0);
+      if (!total) return showToast("A lista esta vazia.");
+      state.transactions.unshift({
+        id: newId(),
+        type: "expense",
+        date: today,
+        description: "Lista de compras",
+        category: "Compras",
+        responsible: "Casa",
+        amount: total,
+        status: "open",
+        note: `${state.shopping.length} itens registrados`
+      });
+      save();
+      renderAll();
+      setView("transactions");
+      showToast("Despesa criada a partir da lista.");
+    });
+
+    document.querySelector("#clearDoneBtn").addEventListener("click", () => {
+      if (!confirm("Remover lancamentos pagos e recebidos?")) return;
+      state.transactions = state.transactions.filter((item) => item.status !== "done");
+      save();
+      renderAll();
+      showToast("Lancamentos concluidos removidos.");
+    });
+
+    document.querySelector("#saveSettingsBtn").addEventListener("click", () => {
+      state.settings.familyName = document.querySelector("#familyName").value.trim() || seed.settings.familyName;
+      state.settings.monthlyGoal = Number(document.querySelector("#monthlyGoal").value || 0);
+      state.settings.note = document.querySelector("#settingsNote").value.trim();
+      document.querySelector("h1").textContent = state.settings.familyName;
+      save();
+      renderAll();
+      showToast("Configuracoes salvas.");
+    });
+
+    document.querySelector("#resetBtn").addEventListener("click", () => {
+      if (!confirm("Restaurar os dados de exemplo?")) return;
+      state = copySeed();
+      save();
+      resetForm();
+      renderAll();
+      showToast("Dados restaurados.");
+    });
+
+    ["searchInput", "typeFilter", "statusFilter", "monthFilter"].forEach((id) => {
+      document.querySelector(`#${id}`).addEventListener("input", renderTransactions);
+    });
+
+    document.querySelector("#cancelEditBtn").addEventListener("click", resetForm);
+    document.querySelector("#printBtn").addEventListener("click", () => window.print());
+    document.querySelector("#exportBtn").addEventListener("click", exportCsv);
+
+    document.querySelector("#txDate").value = today;
+    document.querySelector("h1").textContent = state.settings.familyName;
+    renderAll();
+  </script>
+</body>
+</html>
